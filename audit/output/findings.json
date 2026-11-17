@@ -1,0 +1,51 @@
+{
+  "environment": {
+    "python": "3.13.18",
+    "sklearn": "1.9.1",
+    "numpy": "2.5.3",
+    "pandas": "3.0.5"
+  },
+  "data_sha256": "c37b88a78222f06b4a0001f3a0d46eba942f2116a320c7aaecf59b998cf6adae",
+  "audited_tree_unchanged": true,
+  "audited_manifest": {
+    "model.py": "e1b09fc456f2d8f249723d4511623f9fcb39301025590ca8e9724c231a1d2002"
+  },
+  "reported_auroc": 0.7355189333158682,
+  "deterministic": true,
+  "patient_overlap": 0.9282296650717703,
+  "corrected_auroc_mean": 0.6961812231189709,
+  "corrected_auroc_sd": 0.015504356245601685,
+  "fold_scores": [
+    0.6720621536057778,
+    0.689900426742532,
+    0.6928686853822971,
+    0.7139067379539249,
+    0.7121681119103227
+  ],
+  "findings": [
+    {
+      "id": "LEAK-001",
+      "severity": "Critical",
+      "status": "Verified",
+      "title": "Train/test split is by encounter, not patient",
+      "evidence": "92.8% of test patients (1164/1254) also appear in training.",
+      "reproduce": "python audit/harness.py  (see overlap metric in findings.json)"
+    },
+    {
+      "id": "LEAK-002",
+      "severity": "High",
+      "status": "Verified",
+      "title": "Imputer and scaler are fit before the split",
+      "evidence": "preprocess() output has zero mean over all rows, so test rows informed the fitted statistics. Max mean shift vs train-only fit: 0.0305.",
+      "reproduce": "python audit/harness.py"
+    },
+    {
+      "id": "EVAL-001",
+      "severity": "Critical",
+      "status": "Verified",
+      "title": "Reported AUROC is inflated relative to patient-disjoint evaluation",
+      "evidence": "Reported 0.736 vs patient-grouped 5-fold 0.696 (SD 0.016). Gap exceeds 2 SD of fold variance.",
+      "reproduce": "python audit/harness.py"
+    }
+  ]
+}
